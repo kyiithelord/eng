@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class AppScaffold extends StatelessWidget {
   final Widget child;
@@ -33,7 +34,7 @@ class AppScaffold extends StatelessWidget {
         child: Column(
           children: [
             Expanded(child: child),
-            const _AdBannerPlaceholder(),
+            const AdBanner(),
           ],
         ),
       ),
@@ -52,17 +53,63 @@ class AppScaffold extends StatelessWidget {
   }
 }
 
-class _AdBannerPlaceholder extends StatelessWidget {
-  const _AdBannerPlaceholder();
+class AdBanner extends StatefulWidget {
+  const AdBanner({super.key});
+
+  @override
+  State<AdBanner> createState() => _AdBannerState();
+}
+
+class _AdBannerState extends State<AdBanner> {
+  BannerAd? _bannerAd;
+  bool _failed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAd();
+  }
+
+  void _loadAd() {
+    final ad = BannerAd(
+      size: AdSize.banner,
+      adUnitId: 'ca-app-pub-3940256099942544/6300978111', // Google test unit
+      listener: BannerAdListener(
+        onAdLoaded: (ad) => setState(() => _bannerAd = ad as BannerAd),
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+          setState(() => _failed = true);
+        },
+      ),
+      request: const AdRequest(),
+    );
+    ad.load();
+  }
+
+  @override
+  void dispose() {
+    _bannerAd?.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (_bannerAd != null) {
+      return SizedBox(
+        height: _bannerAd!.size.height.toDouble(),
+        width: _bannerAd!.size.width.toDouble(),
+        child: AdWidget(ad: _bannerAd!),
+      );
+    }
     return Container(
       height: 56,
       width: double.infinity,
       color: Colors.grey.shade200,
       alignment: Alignment.center,
-      child: const Text('Ad Banner (Placeholder)', style: TextStyle(color: Colors.black54)),
+      child: Text(
+        _failed ? 'Ad unavailable' : 'Loading ad…',
+        style: const TextStyle(color: Colors.black54),
+      ),
     );
   }
 }

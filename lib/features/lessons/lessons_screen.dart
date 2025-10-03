@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../widgets/app_scaffold.dart';
 import '../../services/cache_service.dart';
+import '../../services/firebase_service.dart';
 
 class LessonsScreen extends StatefulWidget {
   const LessonsScreen({super.key});
@@ -21,7 +22,8 @@ class _LessonsScreenState extends State<LessonsScreen> {
   }
 
   Future<void> _load() async {
-    final data = await _cache.loadLessons(assetPath: 'assets/lessons/sample_lessons.json');
+    Map<String, dynamic>? data = await FirebaseService.instance.fetchLessons();
+    data ??= await _cache.loadLessons(assetPath: 'assets/lessons/sample_lessons.json');
     final cats = (data['categories'] as List).cast<Map<String, dynamic>>();
     setState(() {
       _categories = cats;

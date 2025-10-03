@@ -4,6 +4,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import '../../services/streak_service.dart';
 import '../../widgets/app_scaffold.dart';
 import '../../services/cache_service.dart';
+import '../../services/firebase_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -26,9 +27,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _load() async {
     final streak = await _streakService.incrementIfNewDay(DateTime.now());
-    final data = await _cache.loadTodayDailyWord(
-      assetPath: 'assets/daily/sample.json',
-    );
+    Map<String, dynamic>? data = await FirebaseService.instance.fetchTodayDailyWord();
+    data ??= await _cache.loadTodayDailyWord(assetPath: 'assets/daily/sample.json');
     setState(() {
       _streak = streak;
       _daily = data;
