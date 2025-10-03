@@ -5,6 +5,9 @@ import '../features/lessons/lessons_screen.dart';
 import '../features/practice/practice_screen.dart';
 import '../features/premium/premium_screen.dart';
 import '../features/settings/settings_screen.dart';
+import '../features/lessons/lesson_detail_screen.dart';
+import '../features/quizzes/quiz_screen.dart';
+import '../features/grammar/grammar_screen.dart';
 
 GoRouter buildRouter() {
   return GoRouter(
@@ -19,6 +22,31 @@ GoRouter buildRouter() {
         path: '/lessons',
         name: 'lessons',
         pageBuilder: (context, state) => const NoTransitionPage(child: LessonsScreen()),
+      ),
+      GoRoute(
+        path: '/lesson',
+        name: 'lessonDetail',
+        pageBuilder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          final categoryId = extra?['categoryId'] as String? ?? '';
+          final title = extra?['title'] as String? ?? 'Lesson';
+          return NoTransitionPage(child: LessonDetailScreen(categoryId: categoryId, title: title));
+        },
+      ),
+      GoRoute(
+        path: '/quiz',
+        name: 'quiz',
+        pageBuilder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          final categoryId = extra?['categoryId'] as String? ?? '';
+          final title = extra?['title'] as String? ?? 'Quiz';
+          return NoTransitionPage(child: QuizScreen(categoryId: categoryId, title: title));
+        },
+      ),
+      GoRoute(
+        path: '/grammar',
+        name: 'grammar',
+        pageBuilder: (context, state) => const NoTransitionPage(child: GrammarScreen()),
       ),
       GoRoute(
         path: '/practice',

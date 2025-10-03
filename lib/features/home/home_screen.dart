@@ -5,6 +5,7 @@ import '../../services/streak_service.dart';
 import '../../widgets/app_scaffold.dart';
 import '../../services/cache_service.dart';
 import '../../services/firebase_service.dart';
+import '../../services/progress_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,6 +19,10 @@ class _HomeScreenState extends State<HomeScreen> {
   int _streak = 0;
   Map<String, dynamic>? _daily;
   final _cache = CacheService();
+  final _progress = ProgressService.instance;
+  int _xp = 0;
+  List<String> _badges = const [];
+  final _challengeCtrl = TextEditingController();
 
   @override
   void initState() {
@@ -32,7 +37,15 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _streak = streak;
       _daily = data;
+      _xp = _progress.getXp();
+      _badges = _progress.getBadges();
     });
+  }
+
+  @override
+  void dispose() {
+    _challengeCtrl.dispose();
+    super.dispose();
   }
 
   @override
@@ -50,9 +63,19 @@ class _HomeScreenState extends State<HomeScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('EngApp', style: Theme.of(context).textTheme.headlineMedium),
-                      Chip(label: Text('Streak: $_streak 🔥')),
+                      Wrap(spacing: 8, children: [
+                        Chip(label: Text('Streak: $_streak 🔥')),
+                        Chip(label: Text('XP: $_xp')),
+                      ]),
                     ],
                   ),
+                  if (_badges.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 6,
+                      children: _badges.take(3).map((b) => Chip(label: Text(b))).toList(),
+                    ),
+                  ],
                   const SizedBox(height: 16),
                   Card(
                     child: Padding(
@@ -89,6 +112,24 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                     ),
+                  ),
+                  const SizedBox(height: 12),
+                  if (_daily != null) _DailyChallengeCard(
+                    word: (_daily!['word'] ?? '').toString(),
+                    controller: _challengeCtrl,
+                    onSuccess: () async {
+                      final ok = await _progress.completeDailyChallenge(xp: 10);
+                      if (!mounted) return;
+                      if (ok) {
+                        setState(() {
+                          _xp = _progress.getXp();
+                          _badges = _progress.getBadges();
+                        });
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Daily challenge complete! +10 XP')));
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Already completed today')));
+                      }
+                    },
                   ),
                   const SizedBox(height: 16),
                   Text('Quick Lessons', style: Theme.of(context).textTheme.titleLarge),

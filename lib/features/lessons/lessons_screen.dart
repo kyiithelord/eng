@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../widgets/app_scaffold.dart';
 import '../../services/cache_service.dart';
 import '../../services/firebase_service.dart';
@@ -43,14 +44,27 @@ class _LessonsScreenState extends State<LessonsScreen> {
                 final cat = _categories[i];
                 final title = cat['title'] as String? ?? 'Category';
                 final items = (cat['items'] as List?) ?? const [];
+                final id = cat['id'] as String? ?? '';
                 return ListTile(
                   leading: const Icon(Icons.menu_book),
                   title: Text(title),
                   subtitle: Text('${items.length} items'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Open "$title" (${items.length} items) – placeholder')),
-                  ),
+                  trailing: Wrap(spacing: 8, children: [
+                    OutlinedButton(
+                      onPressed: () => context.pushNamed('lessonDetail', extra: {
+                        'categoryId': id,
+                        'title': title,
+                      }),
+                      child: const Text('Open'),
+                    ),
+                    FilledButton(
+                      onPressed: () => context.pushNamed('quiz', extra: {
+                        'categoryId': id,
+                        'title': '$title Quiz',
+                      }),
+                      child: const Text('Quiz'),
+                    ),
+                  ]),
                 );
               },
               separatorBuilder: (_, __) => const Divider(height: 1),

@@ -36,4 +36,23 @@ class ProgressService {
     if (xp >= 100) badges.add('100 XP');
     await _box.put('badges', badges.toList());
   }
+
+  // Daily challenge helpers
+  String _fmt(DateTime dt) =>
+      '${dt.year.toString().padLeft(4, '0')}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')}';
+
+  bool isDailyChallengeDone(DateTime now) {
+    final last = _box.get('daily_challenge_date') as String?;
+    return last == _fmt(now);
+  }
+
+  Future<bool> completeDailyChallenge({int xp = 10}) async {
+    final today = _fmt(DateTime.now());
+    final last = _box.get('daily_challenge_date') as String?;
+    if (last == today) return false;
+    await _box.put('daily_challenge_date', today);
+    await addXp(xp);
+    await _updateBadges();
+    return true;
+  }
 }
