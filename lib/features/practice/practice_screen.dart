@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 import '../../widgets/app_scaffold.dart';
 import '../../services/ai_service.dart';
@@ -42,7 +44,16 @@ class _PracticeScreenState extends State<PracticeScreen> {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Microphone permission denied')));
           return;
         }
-        await _record.start(const RecordConfig(encoder: AudioEncoder.aacLc), path: null);
+        // Provide a required recording path
+        String recPath;
+        if (kIsWeb) {
+          // Web ignores the actual path but parameter is required
+          recPath = 'web_record_${DateTime.now().millisecondsSinceEpoch}.m4a';
+        } else {
+          final dir = await getTemporaryDirectory();
+          recPath = '${dir.path}/record_${DateTime.now().millisecondsSinceEpoch}.m4a';
+        }
+        await _record.start(const RecordConfig(encoder: AudioEncoder.aacLc), path: recPath);
         setState(() {
           _isRecording = true;
           _score = null;

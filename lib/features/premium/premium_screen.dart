@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 import '../../widgets/app_scaffold.dart';
 import '../../services/purchase_service.dart';
 
@@ -42,23 +43,21 @@ class _PremiumScreenState extends State<PremiumScreen> {
     final ui = _productUI;
     if (ui == null) return;
     await _purchase.buyPremium(ui.product, (p) async {
-      switch (p.status) {
-        case PurchaseStatus.purchased:
-        case PurchaseStatus.restored:
-          await _purchase.completeIfPending(p);
-          if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Premium activated (demo, server verify TBD)')));
-          break;
-        case PurchaseStatus.pending:
-          break;
-        case PurchaseStatus.error:
-          if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Purchase error: ${p.error}')));
-          break;
-        case PurchaseStatus.canceled:
-          if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Purchase canceled')));
-          break;
+      final status = p.status;
+      if (status == PurchaseStatus.purchased || status == PurchaseStatus.restored) {
+        await _purchase.completeIfPending(p);
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Premium activated (demo, server verify TBD)')));
+      } else if (status == PurchaseStatus.pending) {
+        // no-op for now
+      } else if (status == PurchaseStatus.error) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Purchase error: ${p.error}')));
+      } else if (status == PurchaseStatus.canceled) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Purchase canceled')));
+      } else {
+        // Fallback for any new/unknown statuses
       }
     });
   }

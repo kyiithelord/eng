@@ -3,6 +3,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'routing/app_router.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'services/firebase_service.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,7 +33,9 @@ Future<void> _bootstrap() async {
   await Hive.openBox('daily_cache');
   await Hive.openBox('lessons_cache');
   // Initialize Google Mobile Ads SDK (safe to call even without ad unit ids yet)
-  await MobileAds.instance.initialize();
+  if (!kIsWeb) {
+    await MobileAds.instance.initialize();
+  }
   // Try initializing Firebase (no-op if not configured)
   await FirebaseService.instance.init();
   runApp(const EngApp());
