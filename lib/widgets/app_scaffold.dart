@@ -68,7 +68,9 @@ class _AdBannerState extends State<AdBanner> {
   @override
   void initState() {
     super.initState();
-    _loadAd();
+    if (!kIsWeb) {
+      _loadAd();
+    }
   }
 
   void _loadAd() {
