@@ -11,9 +11,9 @@ import '../features/grammar/grammar_screen.dart';
 import '../features/onboarding/onboarding_screen.dart';
 import '../features/profile/profile_screen.dart';
 
-GoRouter buildRouter() {
+GoRouter buildRouter({required bool onboarded}) {
   return GoRouter(
-    initialLocation: '/',
+    initialLocation: onboarded ? '/' : '/onboarding',
     routes: [
       GoRoute(
         path: '/',

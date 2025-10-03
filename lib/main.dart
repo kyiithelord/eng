@@ -4,6 +4,7 @@ import 'routing/app_router.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'services/firebase_service.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -11,11 +12,12 @@ void main() {
 }
 
 class EngApp extends StatelessWidget {
-  const EngApp({super.key});
+  final bool onboarded;
+  const EngApp({super.key, required this.onboarded});
 
   @override
   Widget build(BuildContext context) {
-    final router = buildRouter();
+    final router = buildRouter(onboarded: onboarded);
     return MaterialApp.router(
       title: 'EngApp',
       debugShowCheckedModeBanner: false,
@@ -39,5 +41,7 @@ Future<void> _bootstrap() async {
   }
   // Try initializing Firebase (no-op if not configured)
   await FirebaseService.instance.init();
-  runApp(const EngApp());
+  final prefs = await SharedPreferences.getInstance();
+  final onboarded = prefs.getBool('onboarded') ?? false;
+  runApp(EngApp(onboarded: onboarded));
 }
