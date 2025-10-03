@@ -163,3 +163,77 @@ class _LessonChip extends StatelessWidget {
     );
   }
 }
+
+class _DailyChallengeCard extends StatefulWidget {
+  final String word;
+  final TextEditingController controller;
+  final Future<void> Function() onSuccess;
+  const _DailyChallengeCard({
+    required this.word,
+    required this.controller,
+    required this.onSuccess,
+  });
+
+  @override
+  State<_DailyChallengeCard> createState() => _DailyChallengeCardState();
+}
+
+class _DailyChallengeCardState extends State<_DailyChallengeCard> {
+  String? _error;
+
+  bool _containsWord(String sentence, String word) {
+    final re = RegExp('(^|\\b)${RegExp.escape(word)}(\\b|\$)', caseSensitive: false);
+    return re.hasMatch(sentence);
+  }
+
+  Future<void> _submit() async {
+    final text = widget.controller.text.trim();
+    if (text.isEmpty) {
+      setState(() => _error = 'Enter a sentence.');
+      return;
+    }
+    if (!_containsWord(text, widget.word)) {
+      setState(() => _error = 'Please use today\'s word: "${widget.word}"');
+      return;
+    }
+    setState(() => _error = null);
+    await widget.onSuccess();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Daily Challenge', style: Theme.of(context).textTheme.titleLarge),
+            const SizedBox(height: 8),
+            Text('Use today\'s word "${widget.word}" in a sentence.'),
+            const SizedBox(height: 8),
+            TextField(
+              controller: widget.controller,
+              decoration: InputDecoration(
+                hintText: 'Type your sentence here',
+                errorText: _error,
+                border: const OutlineInputBorder(),
+              ),
+              minLines: 1,
+              maxLines: 3,
+            ),
+            const SizedBox(height: 8),
+            Align(
+              alignment: Alignment.centerRight,
+              child: ElevatedButton.icon(
+                onPressed: _submit,
+                icon: const Icon(Icons.check_circle),
+                label: const Text('Submit (+10 XP)'),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
