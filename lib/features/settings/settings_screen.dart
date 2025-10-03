@@ -41,6 +41,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: const Text('Grammar Check'),
             onTap: () => context.pushNamed('grammar'),
           ),
+          ListTile(
+            leading: const Icon(Icons.person_outline),
+            title: const Text('Profile'),
+            onTap: () => context.pushNamed('profile'),
+          ),
         ],
       ),
     );
