@@ -1,0 +1,33 @@
+{
+  "categories": [
+    {
+      "id": "greetings",
+      "title": "Greetings",
+      "items": [
+        {"text": "Hello", "translation_my": "မင်္ဂလာပါ", "example": "Hello! How are you?"},
+        {"text": "Nice to meet you", "translation_my": "တွေ့ရတာ ဝမ်းသာပါတယ်", "example": "It's nice to meet you."}
+      ]
+    },
+    {
+      "id": "jobs",
+      "title": "Jobs",
+      "items": [
+        {"text": "Interview", "translation_my": "အင်တာဗျူး", "example": "I have a job interview tomorrow."}
+      ]
+    },
+    {
+      "id": "travel",
+      "title": "Travel",
+      "items": [
+        {"text": "Ticket", "translation_my": "လက်မှတ်", "example": "I need a bus ticket."}
+      ]
+    },
+    {
+      "id": "ielts",
+      "title": "IELTS Tips",
+      "items": [
+        {"text": "Speaking practice", "translation_my": "စကားပြော လေ့ကျင့်ခြင်း", "example": "Practice speaking daily for IELTS."}
+      ]
+    }
+  ]
+}

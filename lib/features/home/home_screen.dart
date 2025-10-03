@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import '../../services/streak_service.dart';
 import '../../widgets/app_scaffold.dart';
+import '../../services/cache_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,6 +16,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final _streakService = StreakService();
   int _streak = 0;
   Map<String, dynamic>? _daily;
+  final _cache = CacheService();
 
   @override
   void initState() {
@@ -24,8 +26,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _load() async {
     final streak = await _streakService.incrementIfNewDay(DateTime.now());
-    final jsonStr = await rootBundle.loadString('assets/daily/sample.json');
-    final data = json.decode(jsonStr) as Map<String, dynamic>;
+    final data = await _cache.loadTodayDailyWord(
+      assetPath: 'assets/daily/sample.json',
+    );
     setState(() {
       _streak = streak;
       _daily = data;

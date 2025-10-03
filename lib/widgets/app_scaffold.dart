@@ -29,7 +29,14 @@ class AppScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(child: child),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(child: child),
+            const _AdBannerPlaceholder(),
+          ],
+        ),
+      ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: currentIndex,
         onDestinationSelected: (i) => _onTap(context, i),
@@ -41,6 +48,21 @@ class AppScaffold extends StatelessWidget {
           NavigationDestination(icon: Icon(Icons.settings_outlined), selectedIcon: Icon(Icons.settings), label: 'Settings'),
         ],
       ),
+    );
+  }
+}
+
+class _AdBannerPlaceholder extends StatelessWidget {
+  const _AdBannerPlaceholder();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 56,
+      width: double.infinity,
+      color: Colors.grey.shade200,
+      alignment: Alignment.center,
+      child: const Text('Ad Banner (Placeholder)', style: TextStyle(color: Colors.black54)),
     );
   }
 }

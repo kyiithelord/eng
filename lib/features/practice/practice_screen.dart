@@ -1,8 +1,59 @@
 import 'package:flutter/material.dart';
+import 'package:record/record.dart';
 import '../../widgets/app_scaffold.dart';
+import '../../services/ai_service.dart';
 
-class PracticeScreen extends StatelessWidget {
+class PracticeScreen extends StatefulWidget {
   const PracticeScreen({super.key});
+
+  @override
+  State<PracticeScreen> createState() => _PracticeScreenState();
+}
+
+class _PracticeScreenState extends State<PracticeScreen> {
+  final _record = AudioRecorder();
+  bool _isRecording = false;
+  String _expected = 'Nice to meet you';
+  int? _score;
+  String? _feedback;
+
+  @override
+  void dispose() {
+    _record.dispose();
+    super.dispose();
+  }
+
+  Future<void> _toggleRecord() async {
+    try {
+      if (_isRecording) {
+        final path = await _record.stop();
+        setState(() => _isRecording = false);
+        if (path != null) {
+          final result = await AiService().scorePronunciation(expectedText: _expected, audioPath: path);
+          setState(() {
+            _score = result.score;
+            _feedback = result.feedback;
+          });
+        }
+      } else {
+        final hasPerm = await _record.hasPermission();
+        if (!hasPerm) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Microphone permission denied')));
+          return;
+        }
+        await _record.start(const RecordConfig(encoder: AudioEncoder.aacLc), path: null);
+        setState(() {
+          _isRecording = true;
+          _score = null;
+          _feedback = null;
+        });
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Recording error: $e')));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,29 +66,21 @@ class PracticeScreen extends StatelessWidget {
           children: [
             Text('Pronunciation Practice', style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 8),
-            const Text('Say the phrase: "Nice to meet you"'),
+            Text('Say the phrase: "$_expected"'),
             const SizedBox(height: 16),
             Row(
               children: [
                 ElevatedButton.icon(
-                  onPressed: () => ScaffoldMessenger.of(context)
-                      .showSnackBar(const SnackBar(content: Text('Record (placeholder)'))),
-                  icon: const Icon(Icons.mic),
-                  label: const Text('Record'),
+                  onPressed: _toggleRecord,
+                  icon: Icon(_isRecording ? Icons.stop : Icons.mic),
+                  label: Text(_isRecording ? 'Stop' : 'Record'),
                 ),
-                const SizedBox(width: 12),
-                OutlinedButton.icon(
-                  onPressed: () => ScaffoldMessenger.of(context)
-                      .showSnackBar(const SnackBar(content: Text('Submit (placeholder)'))),
-                  icon: const Icon(Icons.send),
-                  label: const Text('Submit'),
-                )
               ],
             ),
             const SizedBox(height: 24),
-            const Text('Score: --'),
+            Text('Score: ${_score?.toString() ?? '--'}'),
             const SizedBox(height: 8),
-            const Text('Feedback: (will appear here)')
+            Text('Feedback: ${_feedback ?? '(will appear here)'}'),
           ],
         ),
       ),
