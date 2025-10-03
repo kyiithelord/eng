@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../widgets/app_scaffold.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -34,6 +35,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
             leading: const Icon(Icons.privacy_tip_outlined),
             title: const Text('Privacy Policy'),
             onTap: () {},
+          ),
+          ListTile(
+            leading: const Icon(Icons.spellcheck),
+            title: const Text('Grammar Check'),
+            onTap: () => context.pushNamed('grammar'),
           ),
         ],
       ),

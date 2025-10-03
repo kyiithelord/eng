@@ -8,6 +8,8 @@ import '../features/settings/settings_screen.dart';
 import '../features/lessons/lesson_detail_screen.dart';
 import '../features/quizzes/quiz_screen.dart';
 import '../features/grammar/grammar_screen.dart';
+import '../features/onboarding/onboarding_screen.dart';
+import '../features/profile/profile_screen.dart';
 
 GoRouter buildRouter() {
   return GoRouter(
@@ -17,6 +19,11 @@ GoRouter buildRouter() {
         path: '/',
         name: 'home',
         pageBuilder: (context, state) => const NoTransitionPage(child: HomeScreen()),
+      ),
+      GoRoute(
+        path: '/onboarding',
+        name: 'onboarding',
+        pageBuilder: (context, state) => const NoTransitionPage(child: OnboardingScreen()),
       ),
       GoRoute(
         path: '/lessons',
@@ -62,6 +69,11 @@ GoRouter buildRouter() {
         path: '/settings',
         name: 'settings',
         pageBuilder: (context, state) => const NoTransitionPage(child: SettingsScreen()),
+      ),
+      GoRoute(
+        path: '/profile',
+        name: 'profile',
+        pageBuilder: (context, state) => const NoTransitionPage(child: ProfileScreen()),
       ),
     ],
   );
