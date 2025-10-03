@@ -32,6 +32,7 @@ Future<void> _bootstrap() async {
   await Hive.initFlutter();
   await Hive.openBox('daily_cache');
   await Hive.openBox('lessons_cache');
+  await Hive.openBox('progress_cache');
   // Initialize Google Mobile Ads SDK (safe to call even without ad unit ids yet)
   if (!kIsWeb) {
     await MobileAds.instance.initialize();

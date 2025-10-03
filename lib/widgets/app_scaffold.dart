@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class AppScaffold extends StatelessWidget {
   final Widget child;
@@ -94,6 +95,15 @@ class _AdBannerState extends State<AdBanner> {
 
   @override
   Widget build(BuildContext context) {
+    if (kIsWeb) {
+      return Container(
+        height: 40,
+        width: double.infinity,
+        color: Colors.grey.shade100,
+        alignment: Alignment.center,
+        child: const Text('Ads disabled on Web build'),
+      );
+    }
     if (_bannerAd != null) {
       return SizedBox(
         height: _bannerAd!.size.height.toDouble(),
